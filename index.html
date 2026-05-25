@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TRUE LOCK IN</title>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: '#39ff14',
+                        tg: '#24A1DE', // Официальный цвет Telegram
+                    },
+                    fontFamily: {
+                        mono: ['"Courier New"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .neon-text {
+            text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #39ff14, inset 0 0 2px #39ff14;
+        }
+        .neon-border-red {
+            box-shadow: 0 0 10px #dc2626, inset 0 0 5px #dc2626;
+        }
+        input:focus, select:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-neutral-950 text-white font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <div class="fixed top-4 right-4 bg-neutral-900 border border-neon text-neon px-4 py-2 text-sm font-bold neon-border z-40">
+        🪙 Баланс: <span id="balance">0</span>
+    </div>
+
+    <div id="app-container" class="w-full max-w-sm">
+
+        <div id="start-screen" class="flex flex-col gap-6">
+            <h1 class="text-5xl font-black text-center text-neon neon-text tracking-widest mb-4">
+                TRUE LOCK IN
+            </h1>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-neutral-400 uppercase tracking-widest">Что ботаем?</label>
+                <input id="task-input" type="text" placeholder="Кодить, учить, работать..." 
+                    class="w-full bg-neutral-900 border-2 border-neon text-white p-4 font-bold placeholder-neutral-600 focus:neon-border transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-neutral-400 uppercase tracking-widest">Время фокуса</label>
+                <select id="time-select" class="w-full bg-neutral-900 border-2 border-neon text-white p-4 font-bold appearance-none focus:neon-border transition-all cursor-pointer">
+                    <option value="15">15 минут</option>
+                    <option value="30" selected>30 минут</option>
+                    <option value="60">60 минут</option>
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-2">
+                <button id="start-btn" class="w-full bg-neon text-neutral-950 font-black text-2xl py-5 uppercase tracking-widest hover:bg-white hover:text-black transition-colors shadow-[0_0_20px_rgba(57,255,20,0.4)]">
+                    START LOCK IN
+                </button>
+                
+                <button id="share-tg-btn" class="w-full bg-tg border-2 border-tg text-white font-bold text-lg py-3 uppercase tracking-widest hover:bg-transparent hover:text-tg transition-colors">
+                    🚀 Бросить вызов в TG
+                </button>
+
+                <button id="open-shop-btn" class="w-full bg-transparent border-2 border-white text-white font-bold text-lg py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                    🏪 Магазин комната
+                </button>
+            </div>
+        </div>
+
+        <div id="timer-screen" class="hidden flex flex-col items-center justify-center gap-10">
+            <div id="timer-display" class="text-8xl font-black text-neon neon-text tracking-widest mt-10">
+                00:00
+            </div>
+
+            <div id="lives-display" class="text-4xl tracking-widest drop-shadow-md">
+                ❤️❤️❤️
+            </div>
+
+            <button id="coward-btn" class="w-full mt-10 bg-transparent border-2 border-red-600 text-red-600 font-black text-xl py-5 uppercase tracking-widest hover:bg-red-600 hover:text-white neon-border-red transition-all">
+                I AM A COWARD
+            </button>
+        </div>
+
+        <div id="shop-screen" class="hidden flex flex-col gap-6">
+            <div class="text-center">
+                <h2 class="text-3xl font-black text-white uppercase tracking-wider">Твоя комната</h2>
+                <p class="text-neutral-500 text-sm mt-2">Здесь скоро будет твоя мебель</p>
+            </div>
+            
+            <div class="flex flex-col gap-3 mt-4">
+                <div class="shop-item flex justify-between items-center bg-neutral-900 border border-neutral-800 p-5 hover:border-neon transition-colors cursor-pointer" data-name="Кофе" data-price="50">
+                    <span class="font-bold text-lg">☕ Кофе</span>
+                    <span class="text-neon font-black drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">50 🪙</span>
+                </div>
+                <div class="shop-item flex justify-between items-center bg-neutral-900 border border-neutral-800 p-5 hover:border-neon transition-colors cursor-pointer" data-name="Макбук" data-price="500">
+                    <span class="font-bold text-lg">💻 Макбук</span>
+                    <span class="text-neon font-black drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">500 🪙</span>
+                </div>
+            </div>
+            
+            <button id="close-shop-btn" class="w-full mt-6 bg-transparent border-2 border-white text-white font-bold text-lg py-4 uppercase tracking-widest hover:bg-white hover:text-neutral-950 transition-colors">
+                Назад
+            </button>
+        </div>
+    </div>
+
+    <div id="slap-modal" class="hidden fixed inset-0 z-50 bg-red-950/95 flex flex-col items-center justify-center p-6 backdrop-blur-sm">
+        <div class="w-full max-w-sm flex flex-col items-center gap-8">
+            <h2 id="slap-quote" class="text-2xl md:text-3xl font-black text-center text-white uppercase tracking-widest leading-relaxed"></h2>
+            
+            <div class="flex flex-col gap-4 w-full mt-4">
+                <button id="resume-btn" class="w-full bg-white text-red-700 font-black text-xl py-5 uppercase tracking-widest hover:bg-neutral-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    [ Вернуться в строй ]
+                </button>
+                <button id="giveup-confirm-btn" class="w-full bg-transparent border border-red-800 text-red-500 font-bold text-sm py-3 uppercase tracking-widest hover:bg-red-900 hover:text-white transition-colors">
+                    [ Я всё равно сдаюсь ]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const startScreen = document.getElementById('start-screen');
+        const timerScreen = document.getElementById('timer-screen');
+        const shopScreen = document.getElementById('shop-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const shareTgBtn = document.getElementById('share-tg-btn');
+        const openShopBtn = document.getElementById('open-shop-btn');
+        const closeShopBtn = document.getElementById('close-shop-btn');
+        const cowardBtn = document.getElementById('coward-btn');
+        
+        const taskInput = document.getElementById('task-input');
+        const balanceDisplay = document.getElementById('balance');
+        const timeSelect = document.getElementById('time-select');
+        const timerDisplay = document.getElementById('timer-display');
+        const livesDisplay = document.getElementById('lives-display');
+        
+        const slapModal = document.getElementById('slap-modal');
+        const slapQuote = document.getElementById('slap-quote');
+        const resumeBtn = document.getElementById('resume-btn');
+        const giveupConfirmBtn = document.getElementById('giveup-confirm-btn');
+        
+        const shopItems = document.querySelectorAll('.shop-item');
+
+        const quotes = [
+            "Твои конкуренты сейчас ботают, а ты ноешь. Точно сдаешься?",
+            "Осталось совсем чуть-чуть, соберись, тряпка!",
+            "Иди поплачь, если не тянешь."
+        ];
+
+        let timerInterval;
+        let timeLeft = 0;
+        let selectedMinutes = 0;
+        let lives = 3;
+        let isLockInActive = false;
+        let lockCoins = 0;
+
+        // Инициализация
+        function initEconomy() {
+            const savedCoins = localStorage.getItem('lockCoins');
+            if (savedCoins !== null) {
+                lockCoins = parseInt(savedCoins, 10);
+            } else {
+                lockCoins = 0;
+                localStorage.setItem('lockCoins', lockCoins);
+            }
+            updateBalanceUI();
+        }
+
+        function updateBalanceUI() {
+            balanceDisplay.textContent = lockCoins;
+        }
+
+        function changeBalance(amount) {
+            lockCoins += amount;
+            localStorage.setItem('lockCoins', lockCoins);
+            updateBalanceUI();
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function updateLivesDisplay() {
+            livesDisplay.textContent = '❤️'.repeat(lives) + '💔'.repeat(3 - lives);
+        }
+
+        function runTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = formatTime(timeLeft);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isLockInActive = false;
+                    
+                    const reward = selectedMinutes;
+                    changeBalance(reward);
+                    
+                    setTimeout(() => {
+                        alert(`Уважение! Ты выжил.\nЗаработано монет: 🪙 ${reward}`);
+                        timerScreen.classList.add('hidden');
+                        startScreen.classList.remove('hidden');
+                    }, 50);
+                }
+            }, 1000);
+        }
+
+        function endSession(message) {
+            clearInterval(timerInterval);
+            isLockInActive = false;
+            
+            setTimeout(() => {
+                alert(message);
+                timerScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+            }, 50);
+        }
+
+        // Навигация магазина
+        openShopBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            shopScreen.classList.remove('hidden');
+        });
+
+        closeShopBtn.addEventListener('click', () => {
+            shopScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        // Бросить вызов в Telegram
+        shareTgBtn.addEventListener('click', () => {
+            let taskValue = taskInput.value.trim();
+            if (!taskValue) {
+                taskValue = "Важные дела";
+            }
+            const timeValue = timeSelect.value;
+            
+            // Формируем текст
+            const rawText = `Я начинаю хардкорную Lock-In сессию на ${timeValue} минут. Цель: ${taskValue}. Если я сольюсь, разрешаю вам меня позорить!`;
+            
+            // Кодируем для использования в URL-параметрах
+            const encodedText = encodeURIComponent(rawText);
+            const tgUrl = `https://t.me/share/url?text=${encodedText}`;
+            
+            window.open(tgUrl, '_blank');
+        });
+
+        // Запуск таймера
+        startBtn.addEventListener('click', () => {
+            lives = 3;
+            updateLivesDisplay();
+            
+            selectedMinutes = parseInt(timeSelect.value, 10);
+            timeLeft = selectedMinutes * 60; 
+            timerDisplay.textContent = formatTime(timeLeft);
+            
+            startScreen.classList.add('hidden');
+            timerScreen.classList.remove('hidden');
+            
+            isLockInActive = true;
+            runTimer();
+        });
+
+        // Модалка: Сдаться
+        cowardBtn.addEventListener('click', () => {
+            if (isLockInActive) {
+                clearInterval(timerInterval);
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                slapQuote.textContent = randomQuote;
+                slapModal.classList.remove('hidden');
+            }
+        });
+
+        // Модалка: Вернуться
+        resumeBtn.addEventListener('click', () => {
+            slapModal.classList.add('hidden');
+            runTimer();
+        });
+
+        // Модалка: Подтвердить сдачу
+        giveupConfirmBtn.addEventListener('click', () => {
+            slapModal.classList.add('hidden');
+            endSession('ПОЗОР. Ты слился');
+        });
+
+        // Покупки в магазине
+        shopItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const name = item.getAttribute('data-name');
+                const price = parseInt(item.getAttribute('data-price'), 10);
+                
+                if (lockCoins >= price) {
+                    changeBalance(-price);
+                    alert(`Успешно куплено: ${name}! С вашего баланса списано 🪙 ${price}.`);
+                } else {
+                    alert(`Недостаточно монет! Для покупки ${name} требуется 🪙 ${price}. Иди ботай!`);
+                }
+            });
+        });
+
+        // Проверка свернутой вкладки
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isLockInActive && slapModal.classList.contains('hidden')) {
+                lives--;
+                updateLivesDisplay();
+                
+                if (lives <= 0) {
+                    endSession('ПОЗОР. Ты слился');
+                } else {
+                    setTimeout(() => {
+                        alert('Осторожно! Ты потерял фокус. Минус 1 жизнь!');
+                    }, 50);
+                }
+            }
+        });
+
+        initEconomy();
+    </script>
+</body>
+</html>
