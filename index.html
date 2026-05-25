@@ -6,6 +6,7 @@
     <title>TRUE LOCK IN</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -13,11 +14,15 @@
             theme: {
                 extend: {
                     colors: {
-                        neon: '#39ff14',
-                        tg: '#24A1DE', // Официальный цвет Telegram
+                        cyber: '#050505', // Глубокий черный
+                        neon: '#39ff14',  // Токсичный зеленый
+                        blood: '#ff003c', // Токсичный красный
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)'
                     },
                     fontFamily: {
-                        mono: ['"Courier New"', 'monospace'],
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['"SF Mono"', 'ui-monospace', 'Menlo', 'Monaco', 'monospace'],
                     }
                 }
             }
@@ -25,316 +30,405 @@
     </script>
     
     <style>
-        .neon-text {
-            text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+        body {
+            background-color: #050505;
+            color: white;
+            /* Скрываем скроллбар для эстетики приложения */
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
-        .neon-border {
-            box-shadow: 0 0 5px #39ff14, inset 0 0 2px #39ff14;
+
+        /* Glassmorphism базовые классы */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
         }
-        .neon-border-red {
-            box-shadow: 0 0 10px #dc2626, inset 0 0 5px #dc2626;
+
+        /* Анимации появления экранов */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(30px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        input:focus, select:focus {
+        .screen-enter {
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Пульсация таймера */
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 15px rgba(57, 255, 20, 0.4), 0 0 30px rgba(57, 255, 20, 0.2); transform: scale(1); }
+            50% { text-shadow: 0 0 25px rgba(57, 255, 20, 0.7), 0 0 50px rgba(57, 255, 20, 0.4); transform: scale(1.02); }
+        }
+        .timer-active {
+            animation: neonPulse 2s ease-in-out infinite;
+            color: #39ff14;
+        }
+
+        /* Кастомный ползунок в стиле Apple/Glass */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]:focus {
             outline: none;
         }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
+
+        /* Убираем стандартные рамки инпутов */
+        input:focus { outline: none; }
+        
+        .hide { display: none !important; }
     </style>
 </head>
-<body class="bg-neutral-950 text-white font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="min-h-screen flex flex-col items-center justify-center relative font-sans p-4">
 
-    <div class="fixed top-4 right-4 bg-neutral-900 border border-neon text-neon px-4 py-2 text-sm font-bold neon-border z-40">
-        🪙 Баланс: <span id="balance">0</span>
+    <div class="fixed top-6 right-6 glass-panel px-5 py-2 flex items-center gap-2 z-50 shadow-lg">
+        <span class="text-white/60 text-sm font-medium tracking-wide">BALANCE</span>
+        <span class="text-neon font-mono font-bold text-lg" id="balance-display">0</span>
     </div>
 
-    <div id="app-container" class="w-full max-w-sm">
+    <div class="w-full max-w-sm relative z-10">
 
-        <div id="start-screen" class="flex flex-col gap-6">
-            <h1 class="text-5xl font-black text-center text-neon neon-text tracking-widest mb-4">
-                TRUE LOCK IN
-            </h1>
-
-            <div class="flex flex-col gap-2">
-                <label class="text-xs text-neutral-400 uppercase tracking-widest">Что ботаем?</label>
-                <input id="task-input" type="text" placeholder="Кодить, учить, работать..." 
-                    class="w-full bg-neutral-900 border-2 border-neon text-white p-4 font-bold placeholder-neutral-600 focus:neon-border transition-all">
+        <div id="setup-screen" class="flex flex-col gap-6 screen-enter">
+            
+            <div class="text-center mb-4">
+                <h1 class="text-4xl font-black tracking-tight text-white drop-shadow-md">TRUE LOCK IN</h1>
+                <p class="text-white/40 text-sm mt-1 font-medium">No distractions. Only focus.</p>
             </div>
 
-            <div class="flex flex-col gap-2">
-                <label class="text-xs text-neutral-400 uppercase tracking-widest">Время фокуса</label>
-                <select id="time-select" class="w-full bg-neutral-900 border-2 border-neon text-white p-4 font-bold appearance-none focus:neon-border transition-all cursor-pointer">
-                    <option value="15">15 минут</option>
-                    <option value="30" selected>30 минут</option>
-                    <option value="60">60 минут</option>
-                </select>
+            <div class="glass-panel p-5 flex flex-col gap-3 transition-all duration-300 focus-within:border-white/30 focus-within:bg-white/10">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-widest">Цель сессии</label>
+                <input id="task-input" type="text" placeholder="Например: Дописать код..." 
+                    class="w-full bg-transparent text-white text-lg placeholder-white/30 font-medium">
             </div>
 
-            <div class="flex flex-col gap-3 mt-2">
-                <button id="start-btn" class="w-full bg-neon text-neutral-950 font-black text-2xl py-5 uppercase tracking-widest hover:bg-white hover:text-black transition-colors shadow-[0_0_20px_rgba(57,255,20,0.4)]">
-                    START LOCK IN
-                </button>
-                
-                <button id="share-tg-btn" class="w-full bg-tg border-2 border-tg text-white font-bold text-lg py-3 uppercase tracking-widest hover:bg-transparent hover:text-tg transition-colors">
-                    🚀 Бросить вызов в TG
+            <div class="glass-panel p-5 flex flex-col gap-5">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-bold text-white/50 uppercase tracking-widest">Время (минуты)</label>
+                    <span id="time-display" class="text-2xl font-mono font-bold text-white">45</span>
+                </div>
+                <input id="time-slider" type="range" min="1" max="180" value="45">
+                <div class="flex justify-between text-white/30 text-xs font-mono">
+                    <span>1</span>
+                    <span>180</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-4">
+                <button id="start-btn" class="w-full bg-neon text-cyber font-black text-lg py-4 rounded-2xl tracking-wide shadow-[0_0_20px_rgba(57,255,20,0.2)] transition-all duration-300 active:scale-95 active:bg-white hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]">
+                    НАЧАТЬ LOCK-IN
                 </button>
 
-                <button id="open-shop-btn" class="w-full bg-transparent border-2 border-white text-white font-bold text-lg py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
-                    🏪 Магазин комната
+                <button id="share-tg-btn" class="w-full glass-panel text-white font-semibold text-sm py-4 rounded-2xl tracking-wide transition-all duration-300 active:scale-95 hover:bg-white/10 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                    БРОСИТЬ ВЫЗОВ В ЧАТ
                 </button>
             </div>
         </div>
 
-        <div id="timer-screen" class="hidden flex flex-col items-center justify-center gap-10">
-            <div id="timer-display" class="text-8xl font-black text-neon neon-text tracking-widest mt-10">
-                00:00
+        <div id="timer-screen" class="hide flex flex-col items-center justify-center gap-12 w-full">
+            
+            <div class="text-center w-full">
+                <div class="text-white/40 text-sm font-bold uppercase tracking-widest mb-6" id="current-task-display">Фокус</div>
+                <div id="timer-text" class="text-8xl md:text-9xl font-mono font-black tracking-tighter transition-all duration-300">
+                    00:00
+                </div>
             </div>
 
-            <div id="lives-display" class="text-4xl tracking-widest drop-shadow-md">
-                ❤️❤️❤️
+            <div id="lives-container" class="flex gap-4 drop-shadow-lg">
+                <div class="life-icon w-4 h-4 rounded-full bg-neon shadow-[0_0_10px_#39ff14] transition-all duration-300"></div>
+                <div class="life-icon w-4 h-4 rounded-full bg-neon shadow-[0_0_10px_#39ff14] transition-all duration-300"></div>
+                <div class="life-icon w-4 h-4 rounded-full bg-neon shadow-[0_0_10px_#39ff14] transition-all duration-300"></div>
             </div>
 
-            <button id="coward-btn" class="w-full mt-10 bg-transparent border-2 border-red-600 text-red-600 font-black text-xl py-5 uppercase tracking-widest hover:bg-red-600 hover:text-white neon-border-red transition-all">
+            <button id="coward-btn" class="mt-8 glass-panel border-blood/40 text-blood font-bold text-sm py-4 px-8 uppercase tracking-widest transition-all duration-300 active:scale-95 hover:bg-blood/10">
                 I AM A COWARD
             </button>
         </div>
 
-        <div id="shop-screen" class="hidden flex flex-col gap-6">
-            <div class="text-center">
-                <h2 class="text-3xl font-black text-white uppercase tracking-wider">Твоя комната</h2>
-                <p class="text-neutral-500 text-sm mt-2">Здесь скоро будет твоя мебель</p>
-            </div>
+    </div>
+
+    <div id="coward-modal" class="hide fixed inset-0 z-50 bg-cyber/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm p-8 flex flex-col gap-6 screen-enter border-white/20">
+            <h2 class="text-2xl font-black tracking-tight text-white text-center">Точно сдаешься?</h2>
+            <p class="text-white/60 text-center text-sm">Твои друзья будут ржать. Вся проделанная работа сгорит.</p>
             
-            <div class="flex flex-col gap-3 mt-4">
-                <div class="shop-item flex justify-between items-center bg-neutral-900 border border-neutral-800 p-5 hover:border-neon transition-colors cursor-pointer" data-name="Кофе" data-price="50">
-                    <span class="font-bold text-lg">☕ Кофе</span>
-                    <span class="text-neon font-black drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">50 🪙</span>
-                </div>
-                <div class="shop-item flex justify-between items-center bg-neutral-900 border border-neutral-800 p-5 hover:border-neon transition-colors cursor-pointer" data-name="Макбук" data-price="500">
-                    <span class="font-bold text-lg">💻 Макбук</span>
-                    <span class="text-neon font-black drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]">500 🪙</span>
-                </div>
+            <div class="flex flex-col gap-3 mt-2">
+                <button id="resume-btn" class="w-full bg-white text-cyber font-bold py-4 rounded-xl transition-all duration-300 active:scale-95">
+                    ВЕРНУТЬСЯ В СТРОЙ
+                </button>
+                <button id="confirm-giveup-btn" class="w-full bg-transparent text-blood/80 font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 hover:bg-blood/10">
+                    Я СДАЮСЬ (ПОЗОР)
+                </button>
             </div>
+        </div>
+    </div>
+
+    <div id="focus-warning-modal" class="hide fixed inset-0 z-[60] bg-blood/90 backdrop-blur-xl flex items-center justify-center p-4 transition-all">
+        <div class="w-full max-w-sm flex flex-col items-center gap-8 screen-enter">
+            <div class="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center mb-4">
+                <span class="text-5xl">⚠️</span>
+            </div>
+            <h2 class="text-4xl font-black text-white text-center tracking-tighter uppercase drop-shadow-md">
+                Ты потерял<br>фокус!
+            </h2>
+            <p id="focus-warning-text" class="text-white/90 text-center text-lg font-medium">
+                Таймер был остановлен. Сгорела 1 жизнь.
+            </p>
             
-            <button id="close-shop-btn" class="w-full mt-6 bg-transparent border-2 border-white text-white font-bold text-lg py-4 uppercase tracking-widest hover:bg-white hover:text-neutral-950 transition-colors">
-                Назад
+            <button id="focus-understand-btn" class="w-full mt-4 bg-white text-blood font-black text-lg py-5 rounded-2xl uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-xl">
+                ПОНЯЛ, ВОЗВРАЩАЮСЬ
             </button>
         </div>
     </div>
 
-    <div id="slap-modal" class="hidden fixed inset-0 z-50 bg-red-950/95 flex flex-col items-center justify-center p-6 backdrop-blur-sm">
-        <div class="w-full max-w-sm flex flex-col items-center gap-8">
-            <h2 id="slap-quote" class="text-2xl md:text-3xl font-black text-center text-white uppercase tracking-widest leading-relaxed"></h2>
-            
-            <div class="flex flex-col gap-4 w-full mt-4">
-                <button id="resume-btn" class="w-full bg-white text-red-700 font-black text-xl py-5 uppercase tracking-widest hover:bg-neutral-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    [ Вернуться в строй ]
-                </button>
-                <button id="giveup-confirm-btn" class="w-full bg-transparent border border-red-800 text-red-500 font-bold text-sm py-3 uppercase tracking-widest hover:bg-red-900 hover:text-white transition-colors">
-                    [ Я всё равно сдаюсь ]
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Элементы DOM
-        const startScreen = document.getElementById('start-screen');
-        const timerScreen = document.getElementById('timer-screen');
-        const shopScreen = document.getElementById('shop-screen');
-        
-        const startBtn = document.getElementById('start-btn');
-        const shareTgBtn = document.getElementById('share-tg-btn');
-        const openShopBtn = document.getElementById('open-shop-btn');
-        const closeShopBtn = document.getElementById('close-shop-btn');
-        const cowardBtn = document.getElementById('coward-btn');
-        
-        const taskInput = document.getElementById('task-input');
-        const balanceDisplay = document.getElementById('balance');
-        const timeSelect = document.getElementById('time-select');
-        const timerDisplay = document.getElementById('timer-display');
-        const livesDisplay = document.getElementById('lives-display');
-        
-        const slapModal = document.getElementById('slap-modal');
-        const slapQuote = document.getElementById('slap-quote');
-        const resumeBtn = document.getElementById('resume-btn');
-        const giveupConfirmBtn = document.getElementById('giveup-confirm-btn');
-        
-        const shopItems = document.querySelectorAll('.shop-item');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Элементы UI
+            const setupScreen = document.getElementById('setup-screen');
+            const timerScreen = document.getElementById('timer-screen');
+            const cowardModal = document.getElementById('coward-modal');
+            const focusWarningModal = document.getElementById('focus-warning-modal');
+            
+            const taskInput = document.getElementById('task-input');
+            const timeSlider = document.getElementById('time-slider');
+            const timeDisplay = document.getElementById('time-display');
+            const balanceDisplay = document.getElementById('balance-display');
+            
+            const timerText = document.getElementById('timer-text');
+            const currentTaskDisplay = document.getElementById('current-task-display');
+            const lifeIcons = document.querySelectorAll('.life-icon');
+            const focusWarningText = document.getElementById('focus-warning-text');
+            
+            // Кнопки
+            const startBtn = document.getElementById('start-btn');
+            const shareTgBtn = document.getElementById('share-tg-btn');
+            const cowardBtn = document.getElementById('coward-btn');
+            const resumeBtn = document.getElementById('resume-btn');
+            const confirmGiveupBtn = document.getElementById('confirm-giveup-btn');
+            const focusUnderstandBtn = document.getElementById('focus-understand-btn');
 
-        const quotes = [
-            "Твои конкуренты сейчас ботают, а ты ноешь. Точно сдаешься?",
-            "Осталось совсем чуть-чуть, соберись, тряпка!",
-            "Иди поплачь, если не тянешь."
-        ];
+            // Состояние приложения
+            let balance = 0;
+            let initialMinutes = 45;
+            let timeLeft = 0;
+            let lives = 3;
+            let timerInterval = null;
+            let isLockInActive = false;
+            let isPaused = false;
+            let focusLostCount = 0; // Для отслеживания в рамках одной сессии
 
-        let timerInterval;
-        let timeLeft = 0;
-        let selectedMinutes = 0;
-        let lives = 3;
-        let isLockInActive = false;
-        let lockCoins = 0;
-
-        // Инициализация
-        function initEconomy() {
-            const savedCoins = localStorage.getItem('lockCoins');
-            if (savedCoins !== null) {
-                lockCoins = parseInt(savedCoins, 10);
-            } else {
-                lockCoins = 0;
-                localStorage.setItem('lockCoins', lockCoins);
+            // 1. Инициализация экономики
+            function initEconomy() {
+                const saved = localStorage.getItem('lockCoins');
+                if (saved) balance = parseInt(saved, 10);
+                updateBalanceUI();
             }
-            updateBalanceUI();
-        }
 
-        function updateBalanceUI() {
-            balanceDisplay.textContent = lockCoins;
-        }
-
-        function changeBalance(amount) {
-            lockCoins += amount;
-            localStorage.setItem('lockCoins', lockCoins);
-            updateBalanceUI();
-        }
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        function updateLivesDisplay() {
-            livesDisplay.textContent = '❤️'.repeat(lives) + '💔'.repeat(3 - lives);
-        }
-
-        function runTimer() {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = formatTime(timeLeft);
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    isLockInActive = false;
-                    
-                    const reward = selectedMinutes;
-                    changeBalance(reward);
-                    
-                    setTimeout(() => {
-                        alert(`Уважение! Ты выжил.\nЗаработано монет: 🪙 ${reward}`);
-                        timerScreen.classList.add('hidden');
-                        startScreen.classList.remove('hidden');
-                    }, 50);
-                }
-            }, 1000);
-        }
-
-        function endSession(message) {
-            clearInterval(timerInterval);
-            isLockInActive = false;
-            
-            setTimeout(() => {
-                alert(message);
-                timerScreen.classList.add('hidden');
-                startScreen.classList.remove('hidden');
-            }, 50);
-        }
-
-        // Навигация магазина
-        openShopBtn.addEventListener('click', () => {
-            startScreen.classList.add('hidden');
-            shopScreen.classList.remove('hidden');
-        });
-
-        closeShopBtn.addEventListener('click', () => {
-            shopScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-        });
-
-        // Бросить вызов в Telegram
-        shareTgBtn.addEventListener('click', () => {
-            let taskValue = taskInput.value.trim();
-            if (!taskValue) {
-                taskValue = "Важные дела";
+            function updateBalanceUI() {
+                // Анимация числа (простая)
+                balanceDisplay.textContent = balance;
             }
-            const timeValue = timeSelect.value;
-            
-            // Формируем текст
-            const rawText = `Я начинаю хардкорную Lock-In сессию на ${timeValue} минут. Цель: ${taskValue}. Если я сольюсь, разрешаю вам меня позорить!`;
-            
-            // Кодируем для использования в URL-параметрах
-            const encodedText = encodeURIComponent(rawText);
-            const tgUrl = `https://t.me/share/url?text=${encodedText}`;
-            
-            window.open(tgUrl, '_blank');
-        });
 
-        // Запуск таймера
-        startBtn.addEventListener('click', () => {
-            lives = 3;
-            updateLivesDisplay();
-            
-            selectedMinutes = parseInt(timeSelect.value, 10);
-            timeLeft = selectedMinutes * 60; 
-            timerDisplay.textContent = formatTime(timeLeft);
-            
-            startScreen.classList.add('hidden');
-            timerScreen.classList.remove('hidden');
-            
-            isLockInActive = true;
-            runTimer();
-        });
+            function addCoins(amount) {
+                balance += amount;
+                localStorage.setItem('lockCoins', balance);
+                updateBalanceUI();
+            }
 
-        // Модалка: Сдаться
-        cowardBtn.addEventListener('click', () => {
-            if (isLockInActive) {
+            // 2. Логика ползунка времени
+            timeSlider.addEventListener('input', (e) => {
+                timeDisplay.textContent = e.target.value;
+            });
+
+            // 3. Форматирование времени
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+            // 4. Отрисовка жизней
+            function updateLivesUI() {
+                lifeIcons.forEach((icon, index) => {
+                    if (index < lives) {
+                        icon.classList.remove('bg-cyber', 'shadow-none', 'border', 'border-white/20');
+                        icon.classList.add('bg-neon', 'shadow-[0_0_10px_#39ff14]');
+                    } else {
+                        icon.classList.remove('bg-neon', 'shadow-[0_0_10px_#39ff14]');
+                        icon.classList.add('bg-cyber', 'shadow-none', 'border', 'border-white/20');
+                    }
+                });
+            }
+
+            // 5. Переключение экранов с перезапуском анимаций
+            function switchScreen(hideEl, showEl) {
+                hideEl.classList.add('hide');
+                showEl.classList.remove('hide');
+                // Перезапуск анимации
+                showEl.classList.remove('screen-enter');
+                void showEl.offsetWidth; // trigger reflow
+                showEl.classList.add('screen-enter');
+            }
+
+            // 6. Основной цикл таймера
+            function startInterval() {
+                timerText.classList.add('timer-active');
+                timerInterval = setInterval(() => {
+                    if (isPaused) return;
+                    
+                    timeLeft--;
+                    timerText.textContent = formatTime(timeLeft);
+                    
+                    if (timeLeft <= 0) {
+                        finishSessionSuccess();
+                    }
+                }, 1000);
+            }
+
+            function stopInterval() {
                 clearInterval(timerInterval);
-                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-                slapQuote.textContent = randomQuote;
-                slapModal.classList.remove('hidden');
+                timerText.classList.remove('timer-active');
             }
-        });
 
-        // Модалка: Вернуться
-        resumeBtn.addEventListener('click', () => {
-            slapModal.classList.add('hidden');
-            runTimer();
-        });
-
-        // Модалка: Подтвердить сдачу
-        giveupConfirmBtn.addEventListener('click', () => {
-            slapModal.classList.add('hidden');
-            endSession('ПОЗОР. Ты слился');
-        });
-
-        // Покупки в магазине
-        shopItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const name = item.getAttribute('data-name');
-                const price = parseInt(item.getAttribute('data-price'), 10);
+            // 7. Запуск сессии
+            startBtn.addEventListener('click', () => {
+                initialMinutes = parseInt(timeSlider.value, 10);
+                timeLeft = initialMinutes * 60;
+                lives = 3;
+                isLockInActive = true;
+                isPaused = false;
+                focusLostCount = 0;
                 
-                if (lockCoins >= price) {
-                    changeBalance(-price);
-                    alert(`Успешно куплено: ${name}! С вашего баланса списано 🪙 ${price}.`);
+                const taskStr = taskInput.value.trim() || 'Deep Work';
+                currentTaskDisplay.textContent = taskStr;
+                timerText.textContent = formatTime(timeLeft);
+                updateLivesUI();
+
+                switchScreen(setupScreen, timerScreen);
+                startInterval();
+            });
+
+            // 8. Успешное завершение
+            function finishSessionSuccess() {
+                stopInterval();
+                isLockInActive = false;
+                
+                const earned = initialMinutes; // 1 минута = 1 монета
+                addCoins(earned);
+                
+                // Небольшая задержка для красоты
+                setTimeout(() => {
+                    alert(`МИССИЯ ВЫПОЛНЕНА!\nТы продержался и заработал ${earned} монет.`);
+                    switchScreen(timerScreen, setupScreen);
+                }, 300);
+            }
+
+            // 9. Прерывание сессии (Позор)
+            function finishSessionFail() {
+                stopInterval();
+                isLockInActive = false;
+                cowardModal.classList.add('hide');
+                focusWarningModal.classList.add('hide');
+                
+                alert('СЕССИЯ ПРЕРВАНА.\nТы сдался. Попробуй еще раз, когда будешь готов.');
+                switchScreen(timerScreen, setupScreen);
+            }
+
+            // 10. Кнопка Coward -> Модалка
+            cowardBtn.addEventListener('click', () => {
+                if (!isLockInActive) return;
+                isPaused = true;
+                timerText.classList.remove('timer-active');
+                cowardModal.classList.remove('hide');
+            });
+
+            resumeBtn.addEventListener('click', () => {
+                cowardModal.classList.add('hide');
+                isPaused = false;
+                timerText.classList.add('timer-active');
+            });
+
+            confirmGiveupBtn.addEventListener('click', () => {
+                finishSessionFail();
+            });
+
+            // 11. TAB VISIBILITY API (Умная проверка фокуса)
+            document.addEventListener('visibilitychange', () => {
+                // Реагируем только если сессия активна и пользователь не находится в меню "Сдаться"
+                if (!isLockInActive || !cowardModal.classList.contains('hide')) return;
+
+                if (document.hidden) {
+                    // Юзер свернул вкладку
+                    isPaused = true;
+                    stopInterval();
+                    focusLostCount++;
+                    lives--;
+                    updateLivesUI();
                 } else {
-                    alert(`Недостаточно монет! Для покупки ${name} требуется 🪙 ${price}. Иди ботай!`);
+                    // Юзер вернулся
+                    if (lives <= 0) {
+                        // Смерть от потери фокуса
+                        focusWarningText.innerHTML = `Жизней больше нет.<br>Ты не смог удержать фокус.`;
+                        focusUnderstandBtn.textContent = "ПРИНЯТЬ ПОРАЖЕНИЕ";
+                        focusWarningModal.classList.remove('hide');
+                    } else {
+                        // Потерял жизнь, но еще жив
+                        focusWarningText.innerHTML = `Таймер был остановлен.<br>Осталось жизней: ${lives}`;
+                        focusUnderstandBtn.textContent = "ПОНЯЛ, ВОЗВРАЩАЮСЬ";
+                        focusWarningModal.classList.remove('hide');
+                    }
                 }
             });
-        });
 
-        // Проверка свернутой вкладки
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && isLockInActive && slapModal.classList.contains('hidden')) {
-                lives--;
-                updateLivesDisplay();
-                
+            focusUnderstandBtn.addEventListener('click', () => {
+                focusWarningModal.classList.add('hide');
                 if (lives <= 0) {
-                    endSession('ПОЗОР. Ты слился');
+                    finishSessionFail();
                 } else {
-                    setTimeout(() => {
-                        alert('Осторожно! Ты потерял фокус. Минус 1 жизнь!');
-                    }, 50);
+                    isPaused = false;
+                    startInterval(); // возобновляем пульсацию и счет
                 }
-            }
-        });
+            });
 
-        initEconomy();
+            // 12. TELEGRAM SOCIAL SHARE
+            shareTgBtn.addEventListener('click', () => {
+                const mins = timeSlider.value;
+                const task = taskInput.value.trim() || 'Важные дела';
+                
+                const text = `Я начинаю Lock-In на ${mins} минут. Задача: ${task}. Попробуй продержаться со мной!`;
+                const url = `https://t.me/TrueLockIn_bot`;
+                
+                const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                window.open(tgUrl, '_blank');
+            });
+
+            // Старт
+            initEconomy();
+        });
     </script>
 </body>
 </html>
