@@ -17,6 +17,7 @@
                         cyber: '#050505',
                         neon: '#39ff14',
                         blood: '#ff003c',
+                        tg: '#24A1DE',
                         glass: 'rgba(255, 255, 255, 0.03)',
                         glassBorder: 'rgba(255, 255, 255, 0.08)'
                     },
@@ -52,6 +53,15 @@
         }
         .screen-enter {
             animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+            70% { transform: scale(1.1) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .item-pop {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         /* Анимация ошибки (тряска) */
@@ -119,26 +129,26 @@
     <audio id="lofi-audio" loop preload="none" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"></audio>
     <audio id="success-audio" preload="none" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=success-1-6297.mp3"></audio>
 
-    <div class="fixed top-6 right-6 glass-panel px-5 py-2 flex items-center gap-2 z-50 shadow-lg transition-all" id="balance-pill">
+    <div class="fixed top-6 right-6 glass-panel px-5 py-2 flex items-center gap-2 z-40 shadow-lg transition-all" id="balance-pill">
         <span class="text-white/60 text-sm font-medium tracking-wide">BALANCE</span>
         <span class="text-neon font-mono font-bold text-lg drop-shadow-[0_0_5px_#39ff14]" id="balance-display">0</span>
     </div>
 
-    <button id="lofi-btn" class="hide fixed top-6 left-6 glass-panel w-12 h-12 flex items-center justify-center text-white/40 hover:text-white transition-all z-50 rounded-full active:scale-95">
+    <button id="lofi-btn" class="hide fixed top-6 left-6 glass-panel w-12 h-12 flex items-center justify-center text-white/40 hover:text-white transition-all z-40 rounded-full active:scale-95">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3a9 9 0 00-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1c0-3.87 3.13-7 7-7s7 3.13 7 7v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 00-9-9z"/></svg>
     </button>
 
-    <div class="w-full max-w-sm relative z-10">
+    <div class="w-full max-w-sm relative z-10 flex flex-col items-center justify-center h-full">
 
-        <div id="setup-screen" class="flex flex-col gap-5 screen-enter">
-            <div class="text-center mb-2">
+        <div id="setup-screen" class="flex flex-col gap-5 screen-enter w-full">
+            <div class="text-center mb-2 mt-4">
                 <h1 class="text-4xl font-black tracking-tight text-white drop-shadow-md">TRUE LOCK IN</h1>
                 <p class="text-white/40 text-sm mt-1 font-medium">No distractions. Only focus.</p>
             </div>
 
             <div class="glass-panel p-4 flex flex-col gap-2 transition-all duration-300 focus-within:border-white/30 focus-within:bg-white/10">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-widest">Цель сессии</label>
-                <input id="task-input" type="text" placeholder="Например: Дописать код..." class="w-full bg-transparent text-white text-lg placeholder-white/30 font-medium">
+                <input id="task-input" type="text" placeholder="Ботать алгоритмы..." class="w-full bg-transparent text-white text-lg placeholder-white/30 font-medium">
             </div>
 
             <div class="glass-panel p-5 flex flex-col gap-4">
@@ -153,15 +163,9 @@
                 <button id="start-btn" class="w-full bg-neon text-cyber font-black text-lg py-4 rounded-2xl tracking-wide shadow-[0_0_20px_rgba(57,255,20,0.2)] transition-all duration-300 active:scale-95 hover:bg-white hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]">
                     НАЧАТЬ LOCK-IN
                 </button>
-
-                <div class="flex gap-3 w-full">
-                    <button id="open-shop-btn" class="w-1/2 glass-panel text-white font-bold text-sm py-3 rounded-2xl tracking-wide transition-all active:scale-95 hover:bg-white/10">
-                        🏪 МАГАЗИН
-                    </button>
-                    <button id="share-tg-btn" class="w-1/2 glass-panel text-white font-bold text-sm py-3 rounded-2xl tracking-wide transition-all active:scale-95 hover:bg-white/10">
-                        🚀 ВЫЗОВ В TG
-                    </button>
-                </div>
+                <button id="open-shop-btn" class="w-full glass-panel text-white font-bold text-sm py-4 rounded-2xl tracking-wide transition-all active:scale-95 hover:bg-white/10">
+                    🏆 СТОЛ БОТАНА
+                </button>
             </div>
         </div>
 
@@ -184,13 +188,19 @@
             </button>
         </div>
 
-        <div id="shop-screen" class="hide flex flex-col gap-6 w-full screen-enter">
-            <div class="flex justify-between items-center mb-2 mt-4">
-                <h2 class="text-3xl font-black text-white tracking-tight">ТРОФЕИ</h2>
+        <div id="shop-screen" class="hide flex flex-col w-full h-full pb-8 screen-enter">
+            <div class="flex justify-between items-center mb-6 mt-4 px-2">
+                <h2 class="text-3xl font-black text-white tracking-tight">ТВОЙ СТОЛ</h2>
                 <button id="close-shop-btn" class="text-white/50 font-bold text-sm hover:text-white transition-colors active:scale-95 uppercase tracking-widest">Назад</button>
             </div>
             
-            <div class="grid grid-cols-2 gap-4 w-full" id="shop-grid">
+            <div class="w-full h-40 glass-panel border-neon/30 bg-neon/5 relative flex items-end justify-center pb-4 gap-2 md:gap-4 overflow-hidden rounded-3xl mb-8 shadow-[inset_0_-15px_30px_rgba(57,255,20,0.15)]">
+                <div class="absolute bottom-0 w-full h-6 bg-white/10 blur-sm rounded-b-3xl"></div>
+                <div id="desk-items" class="flex gap-4 z-10 items-end px-4">
+                    </div>
+            </div>
+
+            <div id="shop-grid" class="grid grid-cols-2 gap-4 w-full">
                 </div>
         </div>
 
@@ -216,20 +226,14 @@
             <div class="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center mb-4">
                 <span class="text-5xl">⚠️</span>
             </div>
-            
             <div id="grace-content" class="text-center w-full flex flex-col items-center">
                 <h2 class="text-4xl font-black text-white text-center tracking-tighter uppercase drop-shadow-md mb-2">ВЕРНИСЬ!</h2>
                 <p class="text-white/90 text-lg font-medium">Фокус теряется через:</p>
-                <div id="grace-countdown" class="text-7xl font-mono font-black mt-4 danger-pulse text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">
-                    15
-                </div>
+                <div id="grace-countdown" class="text-7xl font-mono font-black mt-4 danger-pulse text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">15</div>
             </div>
-
             <div id="lost-life-content" class="hide text-center w-full flex flex-col items-center">
                 <h2 class="text-4xl font-black text-white text-center tracking-tighter uppercase drop-shadow-md mb-4">ФОКУС УТЕРЯН</h2>
-                <p id="lost-life-text" class="text-white/90 text-lg font-medium bg-black/30 p-4 rounded-2xl w-full">
-                    Жизнь сгорела!<br>Осталось жизней: 2
-                </p>
+                <p id="lost-life-text" class="text-white/90 text-lg font-medium bg-black/30 p-4 rounded-2xl w-full"></p>
                 <button id="focus-understand-btn" class="w-full mt-6 bg-white text-blood font-black text-lg py-5 rounded-2xl uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-xl">
                     ПОНЯЛ, ВОЗВРАЩАЮСЬ
                 </button>
@@ -237,17 +241,36 @@
         </div>
     </div>
 
+    <div id="result-modal" class="hide fixed inset-0 z-[80] bg-cyber/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div id="result-card" class="glass-panel w-full max-w-sm p-8 flex flex-col gap-6 border-white/20">
+            <div id="result-icon" class="text-6xl text-center item-pop">🏆</div>
+            <div class="text-center">
+                <h2 id="result-title" class="text-3xl font-black tracking-tight text-white uppercase drop-shadow-md">ПОБЕДА</h2>
+                <p id="result-desc" class="text-white/80 mt-2 text-sm font-medium">Заработано монет: 0</p>
+            </div>
+            
+            <div class="flex flex-col gap-3 mt-4">
+                <button id="result-share-btn" class="w-full bg-tg text-white font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(36,161,222,0.4)]">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                    ПОХВАСТАТЬСЯ В ТГ
+                </button>
+                <button id="result-home-btn" class="w-full bg-transparent text-white/60 font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 hover:bg-white/10 hover:text-white">
+                    НА ГЛАВНУЮ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // UI Элементы
+            // Элементы
             const setupScreen = document.getElementById('setup-screen');
             const timerScreen = document.getElementById('timer-screen');
             const shopScreen = document.getElementById('shop-screen');
             
             const cowardModal = document.getElementById('coward-modal');
             const focusWarningModal = document.getElementById('focus-warning-modal');
-            const graceContent = document.getElementById('grace-content');
-            const lostLifeContent = document.getElementById('lost-life-content');
+            const resultModal = document.getElementById('result-modal');
             
             const taskInput = document.getElementById('task-input');
             const timeSlider = document.getElementById('time-slider');
@@ -256,20 +279,26 @@
             const timerText = document.getElementById('timer-text');
             const currentTaskDisplay = document.getElementById('current-task-display');
             const lifeIcons = document.querySelectorAll('.life-icon');
-            const graceCountdownEl = document.getElementById('grace-countdown');
-            const lostLifeText = document.getElementById('lost-life-text');
+            
             const shopGrid = document.getElementById('shop-grid');
+            const deskItems = document.getElementById('desk-items');
             
             // Кнопки
             const startBtn = document.getElementById('start-btn');
             const openShopBtn = document.getElementById('open-shop-btn');
             const closeShopBtn = document.getElementById('close-shop-btn');
-            const shareTgBtn = document.getElementById('share-tg-btn');
             const cowardBtn = document.getElementById('coward-btn');
             const resumeBtn = document.getElementById('resume-btn');
             const confirmGiveupBtn = document.getElementById('confirm-giveup-btn');
-            const focusUnderstandBtn = document.getElementById('focus-understand-btn');
             const lofiBtn = document.getElementById('lofi-btn');
+            
+            // Модалка результата
+            const resultCard = document.getElementById('result-card');
+            const resultIcon = document.getElementById('result-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-desc');
+            const resultShareBtn = document.getElementById('result-share-btn');
+            const resultHomeBtn = document.getElementById('result-home-btn');
 
             // Аудио
             const lofiAudio = document.getElementById('lofi-audio');
@@ -284,21 +313,16 @@
             let isLockInActive = false;
             let isPaused = false;
             
-            // Состояние Grace Period
-            let graceInterval = null;
-            let graceTimeLeft = 15;
-            let isGraceActive = false;
-
             // База товаров магазина
-            const shopItems = [
-                { id: 'coffee', icon: '☕', name: 'Чашка кофе', price: 50 },
-                { id: 'plant', icon: '🪴', name: 'Растение', price: 100 },
-                { id: 'keyboard', icon: '⌨️', name: 'Мех. клава', price: 300 },
-                { id: 'cat', icon: '🐱', name: 'Кот-помощник', price: 1000 }
+            const itemsDB = [
+                { id: 'energy', icon: '🔋', name: 'Энергетик', price: 50 },
+                { id: 'glasses', icon: '👓', name: 'Очки Ботана', price: 150 },
+                { id: 'books', icon: '📚', name: 'Алгоритмы', price: 300 },
+                { id: 'python', icon: '🐍', name: 'Плюшевый Питон', price: 500 }
             ];
             let purchasedItems = [];
 
-            // --- 1. ИНИЦИАЛИЗАЦИЯ И ЭКОНОМИКА ---
+            // --- ИНИЦИАЛИЗАЦИЯ И ЭКОНОМИКА ---
             function initData() {
                 const savedCoins = localStorage.getItem('lockCoins');
                 if (savedCoins) balance = parseInt(savedCoins, 10);
@@ -307,30 +331,40 @@
                 if (savedItems) purchasedItems = JSON.parse(savedItems);
                 
                 updateBalanceUI();
-                renderShop();
+                renderShopAndDesk();
             }
 
             function updateBalanceUI() {
                 balanceDisplay.textContent = balance;
-                document.getElementById('balance-pill').classList.remove('scale-110');
-                void document.getElementById('balance-pill').offsetWidth;
-                document.getElementById('balance-pill').classList.add('scale-110');
+                const pill = document.getElementById('balance-pill');
+                pill.classList.remove('scale-110');
+                void pill.offsetWidth;
+                pill.classList.add('scale-110');
             }
 
-            function addCoins(amount) {
-                balance += amount;
-                localStorage.setItem('lockCoins', balance);
-                updateBalanceUI();
-            }
-
-            // --- 2. МАГАЗИН ТРОФЕЕВ ---
-            function renderShop() {
+            // --- СТОЛ БОТАНА И МАГАЗИН ---
+            function renderShopAndDesk() {
+                // Очистка
                 shopGrid.innerHTML = '';
-                shopItems.forEach(item => {
+                deskItems.innerHTML = '';
+
+                // Отрисовка стола (Полки)
+                purchasedItems.forEach(id => {
+                    const item = itemsDB.find(i => i.id === id);
+                    if (item) {
+                        const el = document.createElement('div');
+                        // Стили для предметов на столе: тень, анимация, курсор
+                        el.className = 'text-4xl md:text-5xl drop-shadow-[0_10px_10px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-3 cursor-default item-pop';
+                        el.textContent = item.icon;
+                        deskItems.appendChild(el);
+                    }
+                });
+
+                // Отрисовка витрины
+                itemsDB.forEach(item => {
                     const isBought = purchasedItems.includes(item.id);
                     const card = document.createElement('div');
                     
-                    // Стилизация в зависимости от статуса покупки
                     const bgClass = isBought ? 'bg-neon/10 border-neon/50' : 'glass-panel hover:bg-white/5';
                     const textClass = isBought ? 'text-neon' : 'text-white/80';
                     const btnClass = isBought ? 'text-neon border-neon/30' : 'text-white/50 border-white/10';
@@ -338,12 +372,11 @@
 
                     card.className = `${bgClass} p-5 flex flex-col items-center justify-center gap-3 transition-all duration-300 rounded-2xl border cursor-pointer active:scale-95 select-none`;
                     card.innerHTML = `
-                        <div class="text-5xl drop-shadow-md mb-1">${item.icon}</div>
+                        <div class="text-4xl drop-shadow-md mb-1 transition-transform group-hover:scale-110">${item.icon}</div>
                         <div class="text-sm font-bold text-center ${textClass} leading-tight">${item.name}</div>
                         <div class="mt-2 w-full text-center border-t pt-2 text-xs font-mono font-bold ${btnClass}">${btnText}</div>
                     `;
 
-                    // Логика покупки
                     if (!isBought) {
                         card.addEventListener('click', () => {
                             if (balance >= item.price) {
@@ -352,9 +385,8 @@
                                 localStorage.setItem('lockCoins', balance);
                                 localStorage.setItem('lockPurchases', JSON.stringify(purchasedItems));
                                 updateBalanceUI();
-                                renderShop(); // Перерисовка сетки
+                                renderShopAndDesk();
                             } else {
-                                // Эффект ошибки (тряска)
                                 card.classList.add('shake');
                                 setTimeout(() => card.classList.remove('shake'), 400);
                             }
@@ -367,23 +399,7 @@
             openShopBtn.addEventListener('click', () => switchScreen(setupScreen, shopScreen));
             closeShopBtn.addEventListener('click', () => switchScreen(shopScreen, setupScreen));
 
-            // --- 3. АУДИО (LO-FI) ---
-            let isLofiPlaying = false;
-            lofiBtn.addEventListener('click', () => {
-                if (isLofiPlaying) {
-                    lofiAudio.pause();
-                    isLofiPlaying = false;
-                    lofiBtn.classList.remove('text-neon', 'shadow-[0_0_15px_#39ff14]');
-                    lofiBtn.classList.add('text-white/40');
-                } else {
-                    lofiAudio.play().catch(e => console.log('Audio play failed:', e));
-                    isLofiPlaying = true;
-                    lofiBtn.classList.remove('text-white/40');
-                    lofiBtn.classList.add('text-neon', 'shadow-[0_0_15px_#39ff14]');
-                }
-            });
-
-            // --- 4. ТАЙМЕР И ЛОГИКА СЕССИИ ---
+            // --- ТАЙМЕР И ЛОГИКА ---
             timeSlider.addEventListener('input', (e) => timeDisplay.textContent = e.target.value);
 
             function formatTime(seconds) {
@@ -429,7 +445,6 @@
                 timerText.classList.remove('timer-active');
             }
 
-            // Старт Сессии
             startBtn.addEventListener('click', () => {
                 initialMinutes = parseInt(timeSlider.value, 10);
                 timeLeft = initialMinutes * 60;
@@ -437,33 +452,109 @@
                 isLockInActive = true;
                 isPaused = false;
                 
-                currentTaskDisplay.textContent = taskInput.value.trim() || 'Deep Work';
+                currentTaskDisplay.textContent = taskInput.value.trim() || 'Важные дела';
                 timerText.textContent = formatTime(timeLeft);
                 updateLivesUI();
 
                 switchScreen(setupScreen, timerScreen);
-                lofiBtn.classList.remove('hide'); // Показываем кнопку наушников
+                lofiBtn.classList.remove('hide');
                 startInterval();
             });
 
-            // Успех
+            // --- AUDIO LO-FI ---
+            let isLofiPlaying = false;
+            lofiBtn.addEventListener('click', () => {
+                if (isLofiPlaying) {
+                    lofiAudio.pause();
+                    isLofiPlaying = false;
+                    lofiBtn.classList.remove('text-neon', 'shadow-[0_0_15px_#39ff14]');
+                    lofiBtn.classList.add('text-white/40');
+                } else {
+                    lofiAudio.play().catch(() => {});
+                    isLofiPlaying = true;
+                    lofiBtn.classList.remove('text-white/40');
+                    lofiBtn.classList.add('text-neon', 'shadow-[0_0_15px_#39ff14]');
+                }
+            });
+
+            // --- РЕЗУЛЬТАТЫ СЕССИИ И СОЦИАЛЬНЫЙ ШАРИНГ ---
+            function openTgShare(text) {
+                const url = `https://t.me/TrueLockIn_bot`;
+                const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                window.open(tgUrl, '_blank');
+            }
+
+            function showResultModal(type, coins = 0) {
+                resultModal.classList.remove('hide');
+                resultCard.classList.remove('screen-enter');
+                void resultCard.offsetWidth; // trigger reflow
+                resultCard.classList.add('screen-enter');
+                
+                // Сброс иконки для анимации
+                resultIcon.classList.remove('item-pop');
+                void resultIcon.offsetWidth;
+                resultIcon.classList.add('item-pop');
+
+                const task = currentTaskDisplay.textContent;
+                const time = initialMinutes;
+
+                if (type === 'win') {
+                    resultIcon.textContent = '🏆';
+                    resultTitle.textContent = 'ТРИУМФ';
+                    resultTitle.className = 'text-4xl font-black tracking-tight text-neon uppercase drop-shadow-[0_0_15px_rgba(57,255,20,0.5)]';
+                    resultDesc.textContent = `Твоя награда: ${coins} 🪙`;
+                    resultCard.className = 'glass-panel w-full max-w-sm p-8 flex flex-col gap-6 border-neon/50 shadow-[0_0_40px_rgba(57,255,20,0.15)]';
+                    
+                    resultShareBtn.innerHTML = `
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                        ПОХВАСТАТЬСЯ В ТГ
+                    `;
+                    resultShareBtn.className = 'w-full bg-tg text-white font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(36,161,222,0.4)]';
+                    
+                    resultShareBtn.onclick = () => {
+                        const text = `Я выжил ${time} минут в True Lock In, ботая [${task}]! Мой мозг кипит, но я гений. Кто побьет мой рекорд?`;
+                        openTgShare(text);
+                    };
+                } else {
+                    resultIcon.textContent = '🤡';
+                    resultTitle.textContent = 'ПОЗОР';
+                    resultTitle.className = 'text-4xl font-black tracking-tight text-blood uppercase drop-shadow-[0_0_15px_rgba(255,0,60,0.5)]';
+                    resultDesc.textContent = `Ты сдался и потерял всё.`;
+                    resultCard.className = 'glass-panel w-full max-w-sm p-8 flex flex-col gap-6 border-blood/50 shadow-[0_0_40px_rgba(255,0,60,0.15)]';
+                    
+                    resultShareBtn.innerHTML = `
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                        ПОКАЯТЬСЯ В ТГ
+                    `;
+                    resultShareBtn.className = 'w-full bg-blood text-white font-bold py-4 rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(255,0,60,0.4)] hover:bg-blood/80';
+                    
+                    resultShareBtn.onclick = () => {
+                        const text = `Я официально слабак. Я слил Lock In на задаче [${task}]. Можете смеяться надо мной в комментариях 🤡.`;
+                        openTgShare(text);
+                    };
+                }
+            }
+
+            resultHomeBtn.addEventListener('click', () => {
+                resultModal.classList.add('hide');
+                switchScreen(timerScreen, setupScreen);
+            });
+
             function finishSessionSuccess() {
                 stopInterval();
                 isLockInActive = false;
                 lofiBtn.classList.add('hide');
-                if (isLofiPlaying) lofiBtn.click(); // Ставим на паузу музыку
+                if (isLofiPlaying) lofiBtn.click(); 
                 
-                successAudio.play().catch(e => console.log('Audio play failed:', e));
+                successAudio.play().catch(() => {});
                 const earned = initialMinutes;
-                addCoins(earned);
                 
                 setTimeout(() => {
-                    alert(`МИССИЯ ВЫПОЛНЕНА!\nТы продержался и заработал ${earned} 🪙.`);
-                    switchScreen(timerScreen, setupScreen);
-                }, 300);
+                    addCoins(earned);
+                    showResultModal('win', earned);
+                }, 500);
             }
 
-            // Позорное завершение
             function finishSessionFail() {
                 stopInterval();
                 isLockInActive = false;
@@ -473,11 +564,9 @@
                 cowardModal.classList.add('hide');
                 focusWarningModal.classList.add('hide');
                 
-                alert('СЕССИЯ ПРЕРВАНА.\nТы сдался. Попробуй еще раз, когда будешь готов.');
-                switchScreen(timerScreen, setupScreen);
+                showResultModal('fail');
             }
 
-            // Модалка "Сдаться"
             cowardBtn.addEventListener('click', () => {
                 if (!isLockInActive) return;
                 isPaused = true;
@@ -491,26 +580,32 @@
             });
             confirmGiveupBtn.addEventListener('click', finishSessionFail);
 
-            // --- 5. УМНАЯ ПОТЕРЯ ФОКУСА (GRACE PERIOD) ---
+            // --- GRACE PERIOD (ПОТЕРЯ ФОКУСА) ---
+            let graceInterval = null;
+            let graceTimeLeft = 15;
+            let isGraceActive = false;
+            
+            const graceContent = document.getElementById('grace-content');
+            const lostLifeContent = document.getElementById('lost-life-content');
+            const graceCountdownEl = document.getElementById('grace-countdown');
+            const lostLifeText = document.getElementById('lost-life-text');
+            const focusUnderstandBtn = document.getElementById('focus-understand-btn');
+
             document.addEventListener('visibilitychange', () => {
-                // Если сессия не активна или открыта модалка сдачи — игнорируем
                 if (!isLockInActive || !cowardModal.classList.contains('hide')) return;
 
                 if (document.hidden) {
-                    // ЮЗЕР СВЕРНУЛ ВКЛАДКУ
                     isPaused = true;
-                    stopInterval(); // пауза основного таймера
+                    stopInterval();
                     
                     isGraceActive = true;
                     graceTimeLeft = 15;
                     graceCountdownEl.textContent = graceTimeLeft;
                     
-                    // Настраиваем UI модалки Grace
                     graceContent.classList.remove('hide');
                     lostLifeContent.classList.add('hide');
                     focusWarningModal.classList.remove('hide');
 
-                    // Запуск скрытого отсчета
                     graceInterval = setInterval(() => {
                         graceTimeLeft--;
                         graceCountdownEl.textContent = graceTimeLeft;
@@ -522,7 +617,6 @@
                             lives--;
                             updateLivesUI();
                             
-                            // Переключаем UI внутри модалки
                             graceContent.classList.add('hide');
                             lostLifeContent.classList.remove('hide');
                             
@@ -535,44 +629,27 @@
                             }
                         }
                     }, 1000);
-
                 } else {
-                    // ЮЗЕР ВЕРНУЛСЯ
                     if (isGraceActive && graceTimeLeft > 0) {
-                        // Успел вернуться до истечения 15 секунд
                         clearInterval(graceInterval);
                         isGraceActive = false;
                         focusWarningModal.classList.add('hide');
-                        
                         isPaused = false;
-                        startInterval(); // Возобновляем таймер
+                        startInterval(); 
                     }
-                    // Если не успел, модалка уже показывает "Жизнь сгорела" и ждет клика.
                 }
             });
 
-            // Кнопка подтверждения потери жизни
             focusUnderstandBtn.addEventListener('click', () => {
                 focusWarningModal.classList.add('hide');
                 if (lives <= 0) {
                     finishSessionFail();
                 } else {
                     isPaused = false;
-                    startInterval(); // Возобновляем таймер
+                    startInterval(); 
                 }
             });
 
-            // --- 6. ТЕЛЕГРАМ ШАРИНГ ---
-            shareTgBtn.addEventListener('click', () => {
-                const mins = timeSlider.value;
-                const task = taskInput.value.trim() || 'Важные дела';
-                const text = `Я начинаю Lock-In на ${mins} минут. Задача: ${task}. Попробуй продержаться со мной!`;
-                const url = `https://t.me/TrueLockIn_bot`;
-                const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-                window.open(tgUrl, '_blank');
-            });
-
-            // Инициализация при старте
             initData();
         });
     </script>
